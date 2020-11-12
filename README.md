@@ -1,7 +1,7 @@
 # autojoin
 A small utility to join lists of files into a single file, with recursive includes and an option to watch for changes.
 
-I am using this to develop Figma plugins, which requires the final code to be in one file. WebPack was overkill for me, so I made something minimal.
+I am using this to develop Figma plugins, which requires the final code to be in one file. WebPack seemed like overkill, so I made something minimal.
 
 The syntax is
 
