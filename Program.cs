@@ -22,7 +22,6 @@ namespace autojoin
             { 
                 Console.Write("\nSpecify input list file\n");
                 Console.Write("\nExample: autojoin input_list.aj output.html\n");
-
                 return;
             }
 

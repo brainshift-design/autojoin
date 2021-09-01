@@ -88,15 +88,23 @@ namespace autojoin
                 if (   file[0            ] == '['
                     && file[file.Length-1] == ']')
                 {
-                    file = file.Substring(1, Math.Max(0, file.Length-2));
+                    var _file = file.Substring(1, Math.Max(0, file.Length-2));
 
                     var parentDir = GetParentDir(
                         Path.GetDirectoryName(inputFile), 
-                        ref file);
+                        ref _file);
 
-                    ReadFile(
-                        Path.GetFullPath(Path.Combine(parentDir, file)), 
-                        ref inputFiles);
+                    try 
+                    {
+                        ReadFile(
+                            Path.GetFullPath(Path.Combine(parentDir, _file)), 
+                            ref inputFiles);
+                    }
+                    catch (Exception)
+                    {
+                        Console.Write("\nError reading file [" + file + "]\n\n");
+                        return;
+                    }
                 }
                 
                 else
