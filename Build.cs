@@ -127,9 +127,8 @@ namespace autojoin
                             parentDir, 
                             file.Substring(0, file.Length-name.Length-1)));
 
-                        inputFiles.AddRange(Directory
-                            .EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                            .Where(s => Path.GetExtension(s).ToLower() == parts[1].ToLower()));
+                        var files = Directory.EnumerateFiles(dir, "*." + parts[1], SearchOption.TopDirectoryOnly);
+                        inputFiles.AddRange(files);
                     }
 
                     else
