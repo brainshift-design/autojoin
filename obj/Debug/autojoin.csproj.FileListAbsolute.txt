@@ -1,7 +1,7 @@
 C:\Users\alex\Documents\GitHub\autojoin\bin\Debug\autojoin.exe.config
 C:\Users\alex\Documents\GitHub\autojoin\bin\Debug\autojoin.exe
 C:\Users\alex\Documents\GitHub\autojoin\bin\Debug\autojoin.pdb
-C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.csprojAssemblyReference.cache
 C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.csproj.CoreCompileInputs.cache
 C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.exe
 C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.pdb
+C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.csproj.AssemblyReference.cache

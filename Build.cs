@@ -21,6 +21,8 @@ namespace autojoin
         public Timer        m_dupTimer;
         FileSystemWatcher   m_watcher;
 
+
+
         public Build(string inFile, string outFile)
         {
             InputFile = Path.GetFullPath(inFile);
@@ -32,18 +34,21 @@ namespace autojoin
             }
 
 
-            InputDir = Environment.CurrentDirectory;
+            InputDir = Path.GetDirectoryName(InputFile);
             UpdateInputFiles();
 
             OutputFile = Path.GetFullPath(Path.Combine(InputDir, outFile));
             JoinFiles(false);
         }
 
+
+
         public void UpdateInputFiles()
         {
             InputFiles = new List<string>();
             ReadFile(InputFile, ref InputFiles);
         }
+
 
 
         void ReadFile(string inputFile, ref List<string> inputFiles)
@@ -54,6 +59,7 @@ namespace autojoin
                 FileAccess.Read,
                 FileShare .ReadWrite));
 
+
             while (!sr.EndOfStream)
             {
                 var file = sr.ReadLine().Trim();
@@ -62,7 +68,7 @@ namespace autojoin
                     continue;
 
                 if (   file.Length >= 2
-                    && file.Substring(0, 2) == "//")
+                    && file.Substring(0, 2) == "//") // comment
                     continue;
 
 
@@ -71,15 +77,63 @@ namespace autojoin
                 {
                     file = file.Substring(1, Math.Max(0, file.Length-2));
 
+                    var parentDir = GetParentDir(
+                        Path.GetDirectoryName(inputFile), 
+                        ref file);
+
                     ReadFile(
-                        Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, file)), 
+                        Path.GetFullPath(Path.Combine(parentDir, file)), 
                         ref inputFiles);
                 }
                 
                 else
-                    inputFiles.Add(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, file)));
+                {
+                    var parentDir = GetParentDir(
+                        Path.GetDirectoryName(inputFile), 
+                        ref file);
+
+                    var path = file.Split(
+                        new char[] {'/', '\\' }, 
+                        StringSplitOptions.RemoveEmptyEntries);
+
+                    var name  = path[path.Length-1];
+                    var parts = name.Split('.');
+
+                    if (   parts.Length > 1
+                        && parts[0] == "*")
+                    { 
+                        var dir = Path.GetFullPath(Path.Combine(
+                            parentDir, 
+                            file.Substring(0, file.Length-name.Length-1)));
+
+                        inputFiles.AddRange(Directory.GetFiles(dir));
+                    }
+
+                    else
+                        inputFiles.Add(Path.GetFullPath(Path.Combine(parentDir, file)));
+                }
             }
         }
+
+
+
+        string GetParentDir(string inputDir, ref string file)
+        {
+            var path = file.Split(
+                new char[] {'/', '\\' }, 
+                StringSplitOptions.RemoveEmptyEntries);
+
+            var parentDir = Environment.CurrentDirectory;
+
+            if (path[0] == "..")
+            { 
+                parentDir = Directory.GetParent(inputDir).FullName;
+                file      = file.Substring(3);
+            }
+
+            return parentDir;
+        }
+
 
 
         public void JoinFiles(bool same)
@@ -122,6 +176,8 @@ namespace autojoin
             }
         }
 
+
+
         void OnFileChanged(object src, FileSystemEventArgs e)
         {
             if (e.FullPath == InputFile)
@@ -144,6 +200,7 @@ namespace autojoin
         }
 
 
+
         public void Watch()
         {
             m_watcher = new FileSystemWatcher();
@@ -160,6 +217,7 @@ namespace autojoin
         }
 
 
+
         void StartLastFileTimer()
         {
             m_dupTimer = new Timer(500);
@@ -169,6 +227,8 @@ namespace autojoin
 
             m_dupTimer.Elapsed += OnTimer;
         }
+
+
 
         void OnTimer(Object src, ElapsedEventArgs e)
         {

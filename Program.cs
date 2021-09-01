@@ -14,12 +14,14 @@ namespace autojoin
     {
         static List<Build> s_builds;
 
+
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
             { 
                 Console.Write("\nSpecify input list file\n");
-                Console.Write("\nExample: autojoin input_file_list.aj output.html\n");
+                Console.Write("\nExample: autojoin input_list.aj output.html\n");
 
                 return;
             }
@@ -27,7 +29,7 @@ namespace autojoin
             if (args.Length == 1)
             {
                 Console.Write("\nSpecify output file\n");
-                Console.Write("\nExample: autojoin input_file_list.aj output.html\n");
+                Console.Write("\nExample: autojoin input_list.aj output.html\n");
                 return;
             }
             
