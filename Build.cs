@@ -2,6 +2,8 @@
 using System.Timers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+
 
 
 namespace autojoin
@@ -36,6 +38,17 @@ namespace autojoin
 
             InputDir = Path.GetDirectoryName(InputFile);
             UpdateInputFiles();
+
+
+            var outPath = outFile.Split(
+                new char[] {'/', '\\' }, 
+                StringSplitOptions.RemoveEmptyEntries);
+
+            if (outPath[0] == "..")
+            { 
+                InputDir = Directory.GetParent(InputDir).FullName;
+                outFile = outFile.Substring(3);
+            }
 
             OutputFile = Path.GetFullPath(Path.Combine(InputDir, outFile));
             JoinFiles(false);
@@ -99,14 +112,16 @@ namespace autojoin
                     var name  = path[path.Length-1];
                     var parts = name.Split('.');
 
-                    if (   parts.Length > 1
+                    if (   parts.Length == 2
                         && parts[0] == "*")
                     { 
                         var dir = Path.GetFullPath(Path.Combine(
                             parentDir, 
                             file.Substring(0, file.Length-name.Length-1)));
 
-                        inputFiles.AddRange(Directory.GetFiles(dir));
+                        inputFiles.AddRange(Directory
+                            .EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                            .Where(s => Path.GetExtension(s).ToLower() == parts[1].ToLower()));
                     }
 
                     else
