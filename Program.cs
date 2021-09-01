@@ -28,7 +28,7 @@ namespace autojoin
 
             if (args.Length == 1)
             {
-                Console.Write("\nSpecify output file\n");
+                Console.Write("\nSpecify output file (path is relative to input)\n");
                 Console.Write("\nExample: autojoin input_list.aj output.html\n");
                 return;
             }
