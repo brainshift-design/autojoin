@@ -9,10 +9,10 @@ The syntax is
  
 In a list file, you put one file per line. Files can be commented out with `//`, and other lists can be included recursively by putting them in square brackets.
 
-In the following example, `[autojoin/operators.aj]` is another list file that gets expanded into the final output.
+In the following example, `[autojoin/otherlist.aj]` is another list file that gets expanded into the final output.
 
 ```
-generate/generate_0.html
+output/output_0.html
 
     util.js
     
@@ -20,11 +20,11 @@ generate/generate_0.html
     core/math.js
     core/random.js
 
-    [autojoin/operators.aj]
+    [autojoin/otherlist.aj]
    
-    generate/generate.js
+    folder/*.js
 
-generate/generate_1.html
+output/output_1.html
 ```
 
 I am using this to develop Figma plugins, which requires the final code to be in one file. WebPack seemed like overkill, so I made something minimal.
