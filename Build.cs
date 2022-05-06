@@ -147,14 +147,15 @@ namespace autojoin
                             ex = exceptions.Split(',').Select(s => s.Trim()).ToList();
                         }
 
-                        var dir = Path.GetFullPath(Path.Combine(
-                            parentDir, 
-                            file.Substring(0, file.Length-name.Length-1)));
+                        var dir = Path.GetFullPath(Path.Combine(parentDir, file.Substring(0, file.Length-name.Length-1)));
 
                         var files = Directory.EnumerateFiles(dir, "*." + parts[1], SearchOption.TopDirectoryOnly);
 
                         foreach (var f in files)
-                            if (!ex.Contains(f)) inputFiles.Add(f);
+                        {
+                            var fn = Path.GetFileNameWithoutExtension(f);
+                            if (!ex.Contains(fn)) inputFiles.Add(f);
+                        }
                     }
 
                     else
