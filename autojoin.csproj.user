@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>"c:\users\alex\documents\github\generator\autojoin\ui.aj" "c:\users\alex\documents\github\generator\output\ui.html" "c:\users\alex\documents\github\generator\autojoin\generator.aj" "c:\users\alex\documents\github\generator\output\generator.html" -watch</StartArguments>
+    <StartArguments>"c:\users\alex\documents\github\generator\autojoin\figma.aj" "c:\users\alex\documents\github\generator\output\main.ts" "c:\users\alex\documents\github\generator\autojoin\generator.aj" "c:\users\alex\documents\github\generator\output\generator.html" "c:\users\alex\documents\github\generator\autojoin\ui.aj" "c:\users\alex\documents\github\generator\output\ui.html" -watch</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PublishUrlHistory>publish\</PublishUrlHistory>
+    <InstallUrlHistory />
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
 </Project>

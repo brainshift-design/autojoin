@@ -5,3 +5,4 @@ C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.csproj.CoreCompileInp
 C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.exe
 C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.pdb
 C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.csproj.AssemblyReference.cache
+C:\Users\alex\Documents\GitHub\autojoin\obj\Debug\autojoin.csproj.SuggestedBindingRedirects.cache

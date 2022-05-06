@@ -121,14 +121,40 @@ namespace autojoin
                     var parts = name.Split('.');
 
                     if (   parts.Length == 2
-                        && parts[0] == "*")
-                    { 
+                        && parts[0].Length > 0
+                        && parts[0][0] == '*')
+                    {
+                        var first = parts[0].Trim();
+                        var ex    = new List<string>();
+
+                        if (   first.Length > 1
+                            && first[1] == '!')
+                        {
+                            if (   first.Length < 3
+                                || first[2] != '(')
+                            {
+                                Console.Write("\nError: ! must be followed by (ex1, ex2, ...)\n\n");
+                                return;
+                            }
+
+                            if (first[first.Length-1] != ')')
+                            {
+                                Console.Write("\nError: exception list must end with )\n\n");
+                                return;
+                            }
+
+                            var exceptions = first.Substring(3, first.Length-4);
+                            ex = exceptions.Split(',').Select(s => s.Trim()).ToList();
+                        }
+
                         var dir = Path.GetFullPath(Path.Combine(
                             parentDir, 
                             file.Substring(0, file.Length-name.Length-1)));
 
                         var files = Directory.EnumerateFiles(dir, "*." + parts[1], SearchOption.TopDirectoryOnly);
-                        inputFiles.AddRange(files);
+
+                        foreach (var f in files)
+                            if (!ex.Contains(f)) inputFiles.Add(f);
                     }
 
                     else

@@ -4,4 +4,5 @@ C:\Users\alex\Documents\GitHub\autojoin\bin\Release\autojoin.pdb
 C:\Users\alex\Documents\GitHub\autojoin\obj\Release\autojoin.csproj.CoreCompileInputs.cache
 C:\Users\alex\Documents\GitHub\autojoin\obj\Release\autojoin.exe
 C:\Users\alex\Documents\GitHub\autojoin\obj\Release\autojoin.pdb
-C:\Users\alex\Documents\GitHub\autojoin\obj\Release\autojoin.csprojAssemblyReference.cache
+C:\Users\alex\Documents\GitHub\autojoin\obj\Release\autojoin.csproj.AssemblyReference.cache
+C:\Users\alex\Documents\GitHub\autojoin\obj\Release\autojoin.csproj.SuggestedBindingRedirects.cache
