@@ -3,6 +3,7 @@ using System.Timers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 
 
@@ -12,12 +13,13 @@ namespace autojoin
     {
         public string       InputFile;
         public string       InputDir;
+        
 
         public List<string> InputFiles;
 
         public string       OutputFile;
-                            
-
+        
+        
         string              m_lastChangedFile;
                               
         public Timer        m_dupTimer;
@@ -25,9 +27,9 @@ namespace autojoin
 
 
 
-        public Build(string inFile, string outFile)
+        public Build(string inFile, string outFile, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null)
         {
-            InputFile = Path.GetFullPath(inFile);
+            InputFile  = Path.GetFullPath(inFile);
 
             if (!File.Exists(InputFile))
             {
@@ -51,7 +53,8 @@ namespace autojoin
             }
 
             OutputFile = Path.GetFullPath(Path.Combine(InputDir, outFile));
-            JoinFiles(false);
+
+            JoinFiles(false, minifyList, replaceList, minifyIgnore);
         }
 
 
@@ -166,7 +169,7 @@ namespace autojoin
 
 
 
-        string GetParentDir(string inputDir, ref string file)
+        public static string GetParentDir(string inputDir, ref string file)
         {
             var path = file.Split(
                 new char[] {'/', '\\' }, 
@@ -185,7 +188,26 @@ namespace autojoin
 
 
 
-        public void JoinFiles(bool same)
+        //public static string GetFullParentDir(string inputDir, ref string file)
+        //{
+        //    var path = file.Split(
+        //        new char[] {'/', '\\' }, 
+        //        StringSplitOptions.RemoveEmptyEntries);
+
+        //    var parentDir = Environment.CurrentDirectory;
+
+        //    if (path[0] == "..")
+        //    { 
+        //        parentDir = Directory.GetParent(inputDir).FullName;
+        //        file      = file.Substring(3);
+        //    }
+
+        //    return parentDir;
+        //}
+
+
+
+        public void JoinFiles(bool same, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null)
         {
             using (var output = new StreamWriter(OutputFile, false))
             { 
@@ -199,11 +221,19 @@ namespace autojoin
                     {
                         var sr = new StreamReader(new FileStream(
                             file,
-                            FileMode.Open,
+                            FileMode  .Open,
                             FileAccess.Read,
-                            FileShare.ReadWrite));
+                            FileShare .ReadWrite));
 
-                        output.Write(sr.ReadToEnd());
+                        var code = sr.ReadToEnd();
+
+                        if (   minifyList  != null
+                            && replaceList != null
+                            && (    minifyIgnore == null
+                                || !minifyIgnore.Contains(file)))
+                            code = Minify(code, minifyList, replaceList);
+
+                        output.Write(code);
 
                         if (i < InputFiles.Count - 1)
                             output.Write("\n\n\n");
@@ -216,13 +246,63 @@ namespace autojoin
                             hasErrors = true;
                         }
 
-                        Console.Write("  Missing file [" + file + "]\n");
+                        Console.Write("Error: missing file [" + file + "]\n");
                     }
                 }
 
                 if (hasErrors) 
                     Console.Write("\n");
             }
+        }
+
+
+
+        public string Minify(string code, string[] minifyList, string[] replaceList)
+        {
+            var minified = code;
+
+
+            // remove single-line comments
+
+            var lines = minified.Split('\n');
+
+            minified = "";
+
+            foreach (var line in lines)
+            {
+                minified +=
+                    Regex.IsMatch(line, @"^.*https?:.*$")
+                    ? line + "\n"
+                    : Regex.Replace(
+                        line, 
+                        @"(?<!http:.*?)//.*?(?=\r?$)", 
+                        "");
+            }
+
+
+            // remove multiline comments
+
+            minified = Regex.Replace(minified, @"/\*(.*?)\*/", "", RegexOptions.Singleline);
+
+
+            // replace tokens
+
+            for (var i = 0; i < minifyList.Length; i++)
+            {
+                var token   = minifyList[i];
+                var replace = replaceList[i];
+
+                minified = Regex.Replace(
+                    minified, 
+                    $@"(?<!\w|')(?<!\w-){Regex.Escape(token)}(?!\w|')", 
+                    replace);
+            }
+
+
+            //minified = Regex.Replace(minified, @"(?<!['""])\s+|\s+(?!['""])", " "); // white space
+
+
+            return minified;
         }
 
 
@@ -252,14 +332,15 @@ namespace autojoin
 
         public void Watch()
         {
-            m_watcher = new FileSystemWatcher();
-
-            m_watcher.Path                  = InputDir;
-            m_watcher.Filter                = "*.*";
-            m_watcher.NotifyFilter          = NotifyFilters.LastWrite;
-            m_watcher.EnableRaisingEvents   = true;
-            m_watcher.IncludeSubdirectories = true;
-
+            m_watcher = new FileSystemWatcher()
+            { 
+                Path                  = InputDir,
+                Filter                = "*.*",
+                NotifyFilter          = NotifyFilters.LastWrite,
+                EnableRaisingEvents   = true,
+                IncludeSubdirectories = true
+            };
+    
             m_watcher.Changed += OnFileChanged;
 
             Console.Write("Watching [" + Path.GetFileName(InputFile) + "] for file changes...\n");
@@ -269,10 +350,11 @@ namespace autojoin
 
         void StartLastFileTimer()
         {
-            m_dupTimer = new Timer(500);
-
-            m_dupTimer.AutoReset = false;
-            m_dupTimer.Enabled   = true;
+            m_dupTimer = new Timer(500)
+            { 
+                AutoReset = false,
+                Enabled   = true
+            };
 
             m_dupTimer.Elapsed += OnTimer;
         }
