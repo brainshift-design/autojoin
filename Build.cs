@@ -27,7 +27,7 @@ namespace autojoin
 
 
 
-        public Build(string inFile, string outFile, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null)
+        public Build(string inFile, string outFile, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null, List<string> minifyMap = null)
         {
             InputFile  = Path.GetFullPath(inFile);
 
@@ -54,7 +54,14 @@ namespace autojoin
 
             OutputFile = Path.GetFullPath(Path.Combine(InputDir, outFile));
 
-            JoinFiles(false, minifyList, replaceList, minifyIgnore);
+            JoinFiles(false, minifyList, replaceList, minifyIgnore, minifyMap);
+
+
+            if (minifyMap != null)
+            {
+                var mapPath = Path.GetFullPath(Path.Combine(InputDir, "minify.map"));
+                File.WriteAllLines(mapPath, minifyMap);
+            }
         }
 
 
@@ -207,7 +214,7 @@ namespace autojoin
 
 
 
-        public void JoinFiles(bool same, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null)
+        public void JoinFiles(bool same, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null, List<string> minifyMap = null)
         {
             using (var output = new StreamWriter(OutputFile, false))
             { 
@@ -231,7 +238,7 @@ namespace autojoin
                             && replaceList != null
                             && (    minifyIgnore == null
                                 || !minifyIgnore.Contains(file)))
-                            code = Minify(code, minifyList, replaceList);
+                            code = Minify(code, minifyList, replaceList, minifyMap);
 
                         output.Write(code);
 
@@ -257,7 +264,7 @@ namespace autojoin
 
 
 
-        public string Minify(string code, string[] minifyList, string[] replaceList)
+        public string Minify(string code, string[] minifyList, string[] replaceList, List<string> minifyMap)
         {
             var minified = code;
 
@@ -295,11 +302,22 @@ namespace autojoin
                 minified = Regex.Replace(
                     minified, 
                     $@"(?<!\w|')(?<!\w-){Regex.Escape(token)}(?!\w|')", 
-                    replace);
+                    match =>
+                    {
+                        var mapping = $"{match},{replace}";
+
+                        if (    minifyMap != null
+                            && !minifyMap.Contains(mapping))
+                            minifyMap.Add(mapping);
+
+                        return replace;
+                    });
             }
 
 
-            //minified = Regex.Replace(minified, @"(?<!['""])\s+|\s+(?!['""])", " "); // white space
+            // remove white space
+
+            minified = Regex.Replace(minified, @"\r(?!\n)", " ");
 
 
             return minified;

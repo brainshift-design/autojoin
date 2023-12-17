@@ -37,6 +37,7 @@ namespace autojoin
             var watch        = args.Contains("-watch");
             var minifyList   = GetMinifyList(args);
             var minifyIgnore = GetMinifyIgnore(args);
+            var minifyMap    = GetMinifyMap(args);
 
 
             var replaceList = 
@@ -60,7 +61,8 @@ namespace autojoin
                     args[i+1], 
                     minifyList, 
                     replaceList, 
-                    minifyIgnore);
+                    minifyIgnore,
+                    minifyMap);
 
                 if (watch) 
                     build.Watch();
@@ -174,6 +176,18 @@ namespace autojoin
 
 
             return ignoreFiles.ToArray();
+        }
+
+
+
+        static List<string> GetMinifyMap(string[] args)
+        {
+            var mapIndex = Array.IndexOf(args, "-minifyMap");
+
+            return
+                mapIndex > -1
+                ? new List<string>()
+                : null;
         }
 
 
