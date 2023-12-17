@@ -60,6 +60,25 @@ namespace autojoin
             if (minifyMap != null)
             {
                 var mapPath = Path.GetFullPath(Path.Combine(InputDir, "minify.map"));
+
+
+                // sort map
+
+                minifyMap.Sort((token1, token2) =>
+                {
+                    var tok1 = token1.Split(',')[0];
+                    var tok2 = token2.Split(',')[0];
+
+                    int num1;
+                    int num2;
+
+                    int.TryParse(tok1.Substring(1), out num1);
+                    int.TryParse(tok2.Substring(1), out num2);
+
+                    return num1 - num2;
+                });
+
+                
                 File.WriteAllLines(mapPath, minifyMap);
             }
         }
