@@ -1,2 +1,11 @@
 bin
 obj
+bin/Debug
+obj/Debug
+obj/Debug/autojoin.pdb
+obj/Debug/autojoin.exe
+bin/Debug/autojoin.exe
+bin/Debug/autojoin.pdb
+.vs/autojoin/v17/.suo
+.vs/autojoin/FileContentIndex/b3d47441-474b-4931-9bc0-75747533fbfa.vsidx
+.vs/autojoin/FileContentIndex/74ebe4fd-7159-426d-9f74-a8ebb85629eb.vsidx

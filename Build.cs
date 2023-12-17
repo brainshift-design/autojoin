@@ -304,7 +304,7 @@ namespace autojoin
                     $@"(?<!\w|')(?<!\w-){Regex.Escape(token)}(?!\w|')", 
                     match =>
                     {
-                        var mapping = $"{match},{replace}";
+                        var mapping = $"{replace},{match}";
 
                         if (    minifyMap != null
                             && !minifyMap.Contains(mapping))
