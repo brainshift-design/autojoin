@@ -356,7 +356,7 @@ namespace autojoin
 
             if (!same)
             {
-                Console.Write("* " + e.Name + " -> " + Path.GetFileName(OutputFile) + "\n");
+                Console.Write(DateTime.Now.ToString("HH:mm:ss") + " | " + e.Name + " -> " + Path.GetFileName(OutputFile) + "\n");
                 StartLastFileTimer();
             }
 
