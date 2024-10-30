@@ -36,8 +36,8 @@ namespace autojoin
                 Console.Write("\n\tautojoin/figma.aj     ../output/main.ts ^\n");
                 Console.Write(  "\tautojoin/generator.aj ../output/generator.html ^\n");
                 Console.Write(  "\tautojoin/ui.aj        ../output/ui.html ^\n");
-                Console.Write(  "\t-minify       autojoin / minify.aj ^\n");
-                Console.Write(  "\t-minifyIgnore autojoin / nominify.aj ^\n");
+                Console.Write(  "\t-minify       autojoin/minify.aj ^\n");
+                Console.Write(  "\t-minifyIgnore autojoin/nominify.aj ^\n");
                 Console.Write(  "\t-minifyMap\n");
                 return;
             }
