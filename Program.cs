@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using System.Reflection.Emit;
 //using System.Threading;
 
 namespace autojoin
@@ -22,7 +23,22 @@ namespace autojoin
             if (args.Length == 0)
             { 
                 Console.Write("\nSpecify input list file\n");
-                Console.Write("\nExample: autojoin input_list.aj output.html\n");
+                Console.Write("\n-watch : Watch for changes and update the output file in real time.\n");
+                Console.Write(  "\t-minify <text file containing a list of keywords to minify>\n");
+                Console.Write(  "\t-minifyIgnore <text file containing a list of files to ignore>\n");
+                Console.Write(  "\t-minifyMap : Create a lookup map for minified keywords for debugging.\n");
+                Console.Write("\nExample for debug build (autojoin.bat): \n");
+                Console.Write("\n\tautojoin/figma.aj     ../output/main.ts ^\n");
+                Console.Write(  "\tautojoin/generator.aj ../output/generator.html ^\n");
+                Console.Write(  "\tautojoin/ui.aj        ../output/ui.html ^\n");
+                Console.Write(  "\t-watch\n");
+                Console.Write("\nExample for release build (autojoin_minify.bat): \n");
+                Console.Write("\n\tautojoin/figma.aj     ../output/main.ts ^\n");
+                Console.Write(  "\tautojoin/generator.aj ../output/generator.html ^\n");
+                Console.Write(  "\tautojoin/ui.aj        ../output/ui.html ^\n");
+                Console.Write(  "\t-minify       autojoin / minify.aj ^\n");
+                Console.Write(  "\t-minifyIgnore autojoin / nominify.aj ^\n");
+                Console.Write(  "\t-minifyMap\n");
                 return;
             }
 
