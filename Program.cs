@@ -23,7 +23,7 @@ namespace autojoin
             if (args.Length == 0)
             { 
                 Console.Write("\nSpecify input list file\n");
-                Console.Write("\n-watch : Watch for changes and update the output file in real time.\n");
+                Console.Write("\n\t-watch : Watch for changes and update the output file in real time.\n");
                 Console.Write(  "\t-minify <text file containing a list of keywords to minify>\n");
                 Console.Write(  "\t-minifyIgnore <text file containing a list of files to ignore>\n");
                 Console.Write(  "\t-minifyMap : Create a lookup map for minified keywords for debugging.\n");
