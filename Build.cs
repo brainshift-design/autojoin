@@ -287,6 +287,9 @@ namespace autojoin
                         if (hasErrors) 
                             Console.Write("\n");
                     }
+
+                    // exit the loop if successful
+                    break;
                 }
                 catch (IOException)
                 {
