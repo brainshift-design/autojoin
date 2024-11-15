@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 
 
@@ -11,19 +12,19 @@ namespace autojoin
 {
     class Build
     {
-        public string       InputFile;
-        public string       InputDir;
-        
-
-        public List<string> InputFiles;
-
-        public string       OutputFile;
-        
-        
-        string              m_lastChangedFile;
+        public string              InputFile;
+        public string              InputDir;
+                                   
+                                   
+        public List<string>        InputFiles;
+                                   
+        public string              OutputFile;
+                                   
+                                   
+        string                     m_lastChangedFile;
                               
-        public Timer        m_dupTimer;
-        FileSystemWatcher   m_watcher;
+        public System.Timers.Timer m_dupTimer;
+        FileSystemWatcher          m_watcher;
 
 
 
@@ -235,49 +236,65 @@ namespace autojoin
 
         public void JoinFiles(bool same, string[] minifyList = null, string[] replaceList = null, string[] minifyIgnore = null, List<string> minifyMap = null)
         {
-            using (var output = new StreamWriter(OutputFile, false))
-            { 
-                var hasErrors = false;
-    
-                for (int i = 0; i < InputFiles.Count; i++)
+            int maxRetries = 5;
+            int retryDelay = 500; // milliseconds
+
+            for (int attempt = 0; attempt < maxRetries; attempt++)
+            {
+                try
                 {
-                    var file = InputFiles[i];
-
-                    if (File.Exists(file))
-                    {
-                        var sr = new StreamReader(new FileStream(
-                            file,
-                            FileMode  .Open,
-                            FileAccess.Read,
-                            FileShare .ReadWrite));
-
-                        var code = sr.ReadToEnd();
-
-                        if (   minifyList  != null
-                            && replaceList != null
-                            && (    minifyIgnore == null
-                                || !minifyIgnore.Contains(file)))
-                            code = Minify(code, minifyList, replaceList, minifyMap);
-
-                        output.Write(code);
-
-                        if (i < InputFiles.Count - 1)
-                            output.Write("\n\n\n");
-                    }
-                    else if (!same)
-                    {
-                        if (!hasErrors) 
+                    using (var output = new StreamWriter(OutputFile, false))
+                    { 
+                        var hasErrors = false;
+    
+                        for (int i = 0; i < InputFiles.Count; i++)
                         {
-                            Console.Write("\n");
-                            hasErrors = true;
+                            var file = InputFiles[i];
+
+                            if (File.Exists(file))
+                            {
+                                var sr = new StreamReader(new FileStream(
+                                    file,
+                                    FileMode  .Open,
+                                    FileAccess.Read,
+                                    FileShare .ReadWrite));
+
+                                var code = sr.ReadToEnd();
+
+                                if (   minifyList  != null
+                                    && replaceList != null
+                                    && (    minifyIgnore == null
+                                        || !minifyIgnore.Contains(file)))
+                                    code = Minify(code, minifyList, replaceList, minifyMap);
+
+                                output.Write(code);
+
+                                if (i < InputFiles.Count - 1)
+                                    output.Write("\n\n\n");
+                            }
+                            else if (!same)
+                            {
+                                if (!hasErrors) 
+                                {
+                                    Console.Write("\n");
+                                    hasErrors = true;
+                                }
+
+                                Console.Write("Error: missing file [" + file + "]\n");
+                            }
                         }
 
-                        Console.Write("Error: missing file [" + file + "]\n");
+                        if (hasErrors) 
+                            Console.Write("\n");
                     }
                 }
+                catch (IOException)
+                {
+                    if (attempt == maxRetries - 1)
+                        throw; // re-throw the exception if it's the last attempt
 
-                if (hasErrors) 
-                    Console.Write("\n");
+                    Thread.Sleep(retryDelay); // wait before retrying
+                }
             }
         }
 
@@ -387,7 +404,7 @@ namespace autojoin
 
         void StartLastFileTimer()
         {
-            m_dupTimer = new Timer(500)
+            m_dupTimer = new System.Timers.Timer(500)
             { 
                 AutoReset = false,
                 Enabled   = true
